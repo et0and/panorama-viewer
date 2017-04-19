@@ -77,14 +77,14 @@ function init() {
     instr3.style.fontSize = 20 + "px";
     instr3.style.height = 100;
 
-    instr4.innerHTML = "- Toque nas bordas da tela para mover a câmera";
+    instr4.innerHTML = "- Clique nas bordas da tela para mover a câmera";
     instr4.style.top = 120 + 'px';
     instr4.style.left = 25 + 'px';
     instr4.style.fontWeight = "normal";
     instr4.style.fontSize = 20 + "px";
     instr4.style.height = 100;
 
-    credits.innerHTML = "Made by Lucas Vieira (luksamuk)";
+    credits.innerHTML = "Made with ❤️ by Lucas Vieira (luksamuk)";
     credits.style.top = (window.innerHeight - 40) + 'px';
     credits.style.left = 25 + 'px';
     credits.style.fontWeight = "normal";
