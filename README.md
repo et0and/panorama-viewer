@@ -15,7 +15,7 @@ Third-party
 I do not own THREE.js. THREE.js's minimal distribution, which is included on this repo,
 has its own license, which can be found on the THREEJS-LICENSE file.
 
-The file "panorama.jpg" was found on Texturify (https://texturify.com), so give those awesome guys a hug.
+The file "img.jpg" was found on Texturify (https://texturify.com), so give those awesome guys a hug.
 
 Copyright
 ---------

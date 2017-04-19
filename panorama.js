@@ -107,7 +107,7 @@ function init() {
 
     camera.target = new THREE.Vector3(0.0, 0.0, 0.0);
     sphere.applyMatrix(new THREE.Matrix4().makeScale(-1.0, 1.0, 1.0));
-    material.map = texLoader.load("panorama.jpg");
+    material.map = texLoader.load("img.jpg");
 
     mesh = new THREE.Mesh(sphere, material);
     scene.add(mesh);
