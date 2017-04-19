@@ -45,6 +45,7 @@ var instr2;
 var instr3;
 var instr4;
 var credits;
+var loadtext;
 
 /* Main logic */
 init();
@@ -70,6 +71,7 @@ function init() {
     instr3 = buildInfoDiv();
     instr4 = buildInfoDiv();
     credits = buildInfoDiv();
+    loadtext = buildInfoDiv();
 
     instr1.innerHTML = "Visualizador 360°";
     instr1.style.top = 20 + 'px';
@@ -104,12 +106,21 @@ function init() {
     credits.style.fontWeight = "normal";
     credits.style.fontSize = 18 + "px";
     credits.style.height = 100;
+
+    loadtext.innerHTML = "Carregando...";
+    loadtext.style.textAlign = "center";
+    loadtext.style.verticalAlign = "middle";
+    loadtext.style.top = ((window.innerHeight / 2.0) - 24.0) + 'px';
+    loadtext.style.left = ((window.innerWidth / 2.0) - 125.0) + 'px';
+    loadtext.style.width = 100;
+    loadtext.style.height = 100;
  
     document.body.appendChild(instr1);
     document.body.appendChild(instr2);
     document.body.appendChild(instr3);
     document.body.appendChild(instr4);
     document.body.appendChild(credits);
+    document.body.appendChild(loadtext);
 
     // Start scene, camera, the sphere, the sphere material and a texture loader
     scene  = new THREE.Scene();
@@ -123,7 +134,10 @@ function init() {
     // Set up camera and sphere material/texture
     camera.target = new THREE.Vector3(0.0, 0.0, 0.0);
     sphere.applyMatrix(new THREE.Matrix4().makeScale(-1.0, 1.0, 1.0));
-    material.map = texLoader.load("img.jpg");
+    material.map = texLoader.load("img.jpg",
+                        function(tex) {
+                            loadtext.style.visibility = 'hidden';
+                        });
 
     // Create mesh and add it to the scene
     mesh = new THREE.Mesh(sphere, material);
@@ -373,4 +387,6 @@ function onWindowResize(e) {
     rotationButtonSizeY = window.innerHeight / 8.0;
     instr1.style.width = window.innerWidth - 20;
     credits.style.top = (window.innerHeight - 20) + 'px';
+    loadtext.style.top = ((window.innerHeight / 2.0) - 24.0) + 'px';
+    loadtext.style.left = ((window.innerWidth / 2.0) - 125.0) + 'px';
 }
