@@ -169,6 +169,12 @@ function init() {
     if(window.DeviceOrientationEvent) {
         useOrientation = true;
         window.addEventListener("deviceorientation", onOrientationChange, false);
+    } else if(window.DeviceMotionEvent) {
+        useOrientation = true;
+        window.addEventListener("devicemotion", onMotionChange, false);
+    } else {
+        useOrientation = true;
+        window.addEventListener("MozOrientation", onMozOrientationChange, false);
     }
 }
 
@@ -374,6 +380,20 @@ function onOrientationChange(e) {
     alpha    = e.alpha;
     beta     = e.beta;
     gamma    = e.gamma;
+}
+
+function onMotionChange(e) {
+    e.preventDefault();
+    alpha = e.acceleration.z * 2.0;
+    beta  = e.acceleration.x * 2.0;
+    gamma = e.acceleration.y * 2.0;
+}
+
+function onMozOrientationChange(e) {
+    e.preventDefault();
+    alpha = orientation.z * 50.0;
+    beta  = orientation.x * 50.0;
+    gamma = orientation.y * 50.0;
 }
 
 function onWindowResize(e) {
