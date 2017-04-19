@@ -1,5 +1,11 @@
-
-console.log("Starting our panoramic renderer");
+/********************************************************************
+ *  Copyright (C) 2017 Lucas Vieira - All Rights Reserved           *
+ *  You may use, distribute and modify this code under the          *
+ *  terms of the MIT License.                                       *
+ *  You should have received a copy of the MIT License with         *
+ *  this file. If not, please write to: lucas.samuel2002@gmail.com, *
+ *  or visit https://luksamuk.github.io/.                           *
+ *******************************************************************/
 
 // Setup local variables
 var scene;
@@ -9,14 +15,17 @@ var material;
 var texLoader;
 var mesh;
 
+// Camera's actual rotation
 var longitude = 0;
 var latitude  = 0;
 
+// Mouse/Touch controls
 var rotationButtonSizeX = window.innerWidth / 8.0;
 var rotationButtonSizeY = window.innerHeight / 8.0;
 var buttonPressed = false;
 var mousePos = new THREE.Vector2(0.0, 0.0);
 
+// Orientation controls
 var useOrientation = false;
 var alpha    = 0.0
 var beta     = 0.0
@@ -24,18 +33,20 @@ var gamma    = 0.0
 var gammaCompass  = 0.0
 var betaCompass   = 0.0
 
+// Keyboard controls
 var pressLeft  = false;
 var pressRight = false;
 var pressUp    = false;
 var pressDown  = false;
 
+// On-screen text
 var instr1;
 var instr2;
 var instr3;
 var instr4;
 var credits;
 
-// Main logic
+/* Main logic */
 init();
 gameLoop();
 
@@ -45,12 +56,15 @@ function gameLoop() {
     draw();
 }
 
+
+
 function init() {
     // Setup renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     
+    // Setup text
     instr1 = buildInfoDiv();
     instr2 = buildInfoDiv();
     instr3 = buildInfoDiv();
@@ -97,6 +111,7 @@ function init() {
     document.body.appendChild(instr4);
     document.body.appendChild(credits);
 
+    // Start scene, camera, the sphere, the sphere material and a texture loader
     scene  = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75,
                         window.innerWidth / window.innerHeight,
@@ -105,13 +120,16 @@ function init() {
     material = new THREE.MeshBasicMaterial();
     texLoader = new THREE.TextureLoader();
 
+    // Set up camera and sphere material/texture
     camera.target = new THREE.Vector3(0.0, 0.0, 0.0);
     sphere.applyMatrix(new THREE.Matrix4().makeScale(-1.0, 1.0, 1.0));
     material.map = texLoader.load("img.jpg");
 
+    // Create mesh and add it to the scene
     mesh = new THREE.Mesh(sphere, material);
     scene.add(mesh);
 
+    // LISTENERS
     // Mouse listeners
     document.addEventListener("mousedown", onMouseDown, false);
     document.addEventListener("mouseup", onMouseUp, false);
@@ -128,11 +146,12 @@ function init() {
     document.addEventListener("touchleave", function(e){ e.preventDefault(); }, false);
     document.addEventListener("touchcancel", function(e){ e.preventDefault(); }, false);
 
-    // Resize listeners
+    // Window listeners
     window.addEventListener("resize", onWindowResize, false);
-    window.addEventListener("selectstart", function(e){ e.preventDefault(); }, false)
+    // Prevent selections showing up
+    window.addEventListener("selectstart", function(e){ e.preventDefault(); }, false);
 
-    // Orientation listeners
+    // Orientation listener
     if(window.DeviceOrientationEvent) {
         useOrientation = true;
         window.addEventListener("deviceorientation", onOrientationChange, false);
@@ -214,18 +233,65 @@ function update() {
     //console.log("World orientation: {lon " + longitude + ", lat " + latitude + "}");
 
     // Move camera according to latitude and longitude
-    camera.target.x = 500.0 * Math.sin(THREE.Math.degToRad(90.0 - latitude)) * Math.cos(THREE.Math.degToRad(longitude));
+    camera.target.x = 500.0 * Math.sin(THREE.Math.degToRad(90.0 - latitude))
+                            * Math.cos(THREE.Math.degToRad(longitude));
     camera.target.y = 500.0 * Math.cos(THREE.Math.degToRad(90.0 - latitude));
-    camera.target.z = 500.0 * Math.sin(THREE.Math.degToRad(90.0 - latitude)) * Math.sin(THREE.Math.degToRad(longitude));
+    camera.target.z = 500.0 * Math.sin(THREE.Math.degToRad(90.0 - latitude))
+                            * Math.sin(THREE.Math.degToRad(longitude));
+    // Dispatch camera target
     camera.lookAt(camera.target);
 }
 
 function draw() {
+    // Render the scene
     renderer.render(scene, camera);
 }
 
+// Helper function to fetch the gamma (horizontal) and beta (vertical)
+// orientation compasses
+function getCompass() {
+    var alphaRad = THREE.Math.degToRad(alpha);
+    var betaRad  = THREE.Math.degToRad(beta);
+    var gammaRad = THREE.Math.degToRad(gamma);
+
+    var cosAlpha = Math.cos(alphaRad);
+    var sinAlpha = Math.sin(alphaRad);
+    var cosBeta = Math.cos(betaRad);
+    var sinBeta = Math.sin(betaRad);
+    var cosGamma = Math.cos(gammaRad);
+    var sinGamma = Math.sin(gammaRad);
+
+    var rotA = (-cosAlpha * sinGamma) - (sinAlpha * sinBeta * cosGamma);
+    var rotB = (-sinAlpha * sinGamma) + (cosAlpha * sinBeta * cosGamma);
+    var rotC = -cosBeta * cosGamma;
 
 
+    // "gamma" compass
+    gammaCompass = Math.atan(rotA / rotB);
+    gammaCompass += (rotB < 0) ? Math.PI : ((rotA < 0) ? 2.0 * Math.PI : 0.0);
+
+    // "beta" compass
+    betaCompass  = -Math.atan(-rotC);
+}
+
+// Helper function to create div texts to be appended to the document
+function buildInfoDiv() {
+    var myDiv = document.createElement("div");
+    myDiv.style.pointerEvents = "none";
+    myDiv.style.position = "absolute";
+    myDiv.style.textShadow = "1px 1px #000";
+    myDiv.style.fontWeight = "bold";
+    myDiv.style.fontSize = 48 + "px";
+    //myDiv.style.zIndex = 1;
+    myDiv.style.color = "white";
+    myDiv.innerHTML = ".innerHTML";
+    myDiv.style.top = 20 + 'px';
+    myDiv.style.left = 20 + 'px';
+    return myDiv;
+}
+
+
+/* LISTENER CALLBACKS */
 function onMouseDown(e) {
     e.preventDefault();
     if(e.which == 1)
@@ -307,44 +373,4 @@ function onWindowResize(e) {
     rotationButtonSizeY = window.innerHeight / 8.0;
     instr1.style.width = window.innerWidth - 20;
     credits.style.top = (window.innerHeight - 20) + 'px';
-}
-
-function getCompass() {
-    var alphaRad = THREE.Math.degToRad(alpha);
-    var betaRad  = THREE.Math.degToRad(beta);
-    var gammaRad = THREE.Math.degToRad(gamma);
-
-    var cosAlpha = Math.cos(alphaRad);
-    var sinAlpha = Math.sin(alphaRad);
-    var cosBeta = Math.cos(betaRad);
-    var sinBeta = Math.sin(betaRad);
-    var cosGamma = Math.cos(gammaRad);
-    var sinGamma = Math.sin(gammaRad);
-
-    var rotA = (-cosAlpha * sinGamma) - (sinAlpha * sinBeta * cosGamma);
-    var rotB = (-sinAlpha * sinGamma) + (cosAlpha * sinBeta * cosGamma);
-    var rotC = -cosBeta * cosGamma;
-
-
-    // "gamma" compass
-    gammaCompass = Math.atan(rotA / rotB);
-    gammaCompass += (rotB < 0) ? Math.PI : ((rotA < 0) ? 2.0 * Math.PI : 0.0);
-
-    // "beta" compass
-    betaCompass  = -Math.atan(-rotC);
-}
-
-function buildInfoDiv() {
-    var myDiv = document.createElement("div");
-    myDiv.style.pointerEvents = "none";
-    myDiv.style.position = "absolute";
-    myDiv.style.textShadow = "1px 1px #000";
-    myDiv.style.fontWeight = "bold";
-    myDiv.style.fontSize = 48 + "px";
-    //myDiv.style.zIndex = 1;
-    myDiv.style.color = "white";
-    myDiv.innerHTML = ".innerHTML";
-    myDiv.style.top = 20 + 'px';
-    myDiv.style.left = 20 + 'px';
-    return myDiv;
 }
