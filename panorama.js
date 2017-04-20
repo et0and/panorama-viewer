@@ -42,8 +42,6 @@ var pressDown  = false;
 // On-screen text
 var instr1;
 var instr2;
-var instr3;
-var instr4;
 var credits;
 var loadtext;
 
@@ -68,8 +66,6 @@ function init() {
     // Setup text
     instr1 = buildInfoDiv();
     instr2 = buildInfoDiv();
-    instr3 = buildInfoDiv();
-    instr4 = buildInfoDiv();
     credits = buildInfoDiv();
     loadtext = buildInfoDiv();
 
@@ -79,26 +75,14 @@ function init() {
     instr1.style.width = window.innerWidth - 20;
     instr1.style.height = 100;
 
-    instr2.innerHTML = "- Mova a câmera livremente com seu dispositivo";
+    instr2.innerHTML = "- Mova a câmera livremente com seu dispositivo<br/>"
+                     + "- Use setas do teclado para mover a câmera<br/>"
+                     + "- Clique nas bordas da tela para mover a câmera";
     instr2.style.top = 80 + 'px';
     instr2.style.left = 25 + 'px';
     instr2.style.fontWeight = "normal";
     instr2.style.fontSize = 20 + "px";
     instr2.style.height = 100;
-
-    instr3.innerHTML = "- Use setas do teclado para mover a câmera";
-    instr3.style.top = 100 + 'px';
-    instr3.style.left = 25 + 'px';
-    instr3.style.fontWeight = "normal";
-    instr3.style.fontSize = 20 + "px";
-    instr3.style.height = 100;
-
-    instr4.innerHTML = "- Clique nas bordas da tela para mover a câmera";
-    instr4.style.top = 120 + 'px';
-    instr4.style.left = 25 + 'px';
-    instr4.style.fontWeight = "normal";
-    instr4.style.fontSize = 20 + "px";
-    instr4.style.height = 100;
 
     credits.innerHTML = "Made with ❤️ by Lucas Vieira (luksamuk)";
     credits.style.top = (window.innerHeight - 40) + 'px';
@@ -117,8 +101,6 @@ function init() {
  
     document.body.appendChild(instr1);
     document.body.appendChild(instr2);
-    document.body.appendChild(instr3);
-    document.body.appendChild(instr4);
     document.body.appendChild(credits);
     document.body.appendChild(loadtext);
 
@@ -151,9 +133,6 @@ function init() {
     // Keyboard listeners
     document.addEventListener("keydown", onKeyDown, false);
     document.addEventListener("keyup", onKeyUp, false);
-    // Touch listeners; for debugging only, sorry
-    //document.addEventListener("touchstart", onTouch, false);
-    //document.addEventListener("touchend", onUnTouch, false);
     // Ignore other touch events
     document.addEventListener("touchmove", function(e){ e.preventDefault(); }, false);
     document.addEventListener("touchenter", function(e){ e.preventDefault(); }, false);
@@ -173,8 +152,12 @@ function init() {
         useOrientation = true;
         window.addEventListener("devicemotion", onMotionChange, false);
     } else {
-        useOrientation = true;
-        window.addEventListener("MozOrientation", onMozOrientationChange, false);
+        useOrientation = false;
+        console.log("Orientation not supported!");
+        // Sorry, your phone sucks
+        document.addEventListener("touchstart", onTouch, false);
+        document.addEventListener("touchend", onUnTouch, false);
+        instr2.innerHTML += "<br/>AVISO: Seu aparelho não suporta este app! Toque nas bordas para mover.";
     }
 }
 
@@ -299,7 +282,7 @@ function buildInfoDiv() {
     var myDiv = document.createElement("div");
     myDiv.style.pointerEvents = "none";
     myDiv.style.position = "absolute";
-    myDiv.style.textShadow = "1px 1px #000";
+    myDiv.style.textShadow = "2px 2px #000";
     myDiv.style.fontWeight = "bold";
     myDiv.style.fontSize = 48 + "px";
     //myDiv.style.zIndex = 1;
@@ -356,10 +339,8 @@ function onKeyUp(e) {
         pressDown = false;
 }
 
-// Touch events for debugging only,
-// as they might affect/break the phone
-// experience
-/*function onTouch(e) {
+// Touch events for when your phone sucks
+function onTouch(e) {
     e.preventDefault();
     var touchObj = e.changedTouches[0];
     mousePos.x = touchObj.clientX;
@@ -373,7 +354,7 @@ function onUnTouch(e) {
     mousePos.x = touchObj.clientX;
     mousePos.y = touchObj.clientY;
     buttonPressed = false;
-}*/
+}
 
 function onOrientationChange(e) {
     e.preventDefault();
@@ -389,15 +370,7 @@ function onMotionChange(e) {
     gamma = e.acceleration.y * 2.0;
 }
 
-function onMozOrientationChange(e) {
-    e.preventDefault();
-    alpha = orientation.z * 50.0;
-    beta  = orientation.x * 50.0;
-    gamma = orientation.y * 50.0;
-}
-
 function onWindowResize(e) {
-    console.log("Resized screen");
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera = new THREE.PerspectiveCamera(75,
                         window.innerWidth / window.innerHeight,
@@ -406,7 +379,7 @@ function onWindowResize(e) {
     rotationButtonSizeX = window.innerWidth / 8.0;
     rotationButtonSizeY = window.innerHeight / 8.0;
     instr1.style.width = window.innerWidth - 20;
-    credits.style.top = (window.innerHeight - 20) + 'px';
+    credits.style.top = (window.innerHeight - 40) + 'px';
     loadtext.style.top = ((window.innerHeight / 2.0) - 24.0) + 'px';
     loadtext.style.left = ((window.innerWidth / 2.0) - 125.0) + 'px';
 }
