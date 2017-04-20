@@ -237,7 +237,7 @@ function update() {
     // Phone orientation
     if(useOrientation) {
         getCompass();
-        longitude = THREE.Math.radToDeg(gammaCompass * 1.5);
+        longitude = THREE.Math.radToDeg(gammaCompass);
         latitude  = THREE.Math.radToDeg(betaCompass * 1.5);
 
         // Prevent that NaN nonsense when using a desktop browser
